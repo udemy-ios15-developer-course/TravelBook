@@ -37,7 +37,35 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         mapView.addGestureRecognizer(gestureRecognizer)
         
         if selectedName != "" {
+            let appDelegate = UIApplication.shared.delegate as! AppDelegate
+            let context = appDelegate.persistentContainer.viewContext
             
+            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Places")
+            request.returnsObjectsAsFaults = false
+            request.predicate = NSPredicate(format: "id = %@", selectedId!.uuidString)
+                                            
+            do {
+                let results = try context.fetch(request)
+                for result in results as! [NSManagedObject] {
+                    let name = result.value(forKey: "name") as? String
+                    let comment = result.value(forKey: "comment") as? String
+                    let longitude = result.value(forKey: "longitude") as! Double
+                    let latitude = result.value(forKey: "latitude") as! Double
+                    // let id = result.value(forKey: "name") as? UUID
+
+                    nameText.text = name
+                    commentText.text = comment
+                    let annotation = MKPointAnnotation()
+                    annotation.title = name
+                    annotation.subtitle = comment
+                    let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    annotation.coordinate = coordinate
+                    mapView.addAnnotation(annotation)
+                }
+                
+            } catch {
+                fatalError(error.localizedDescription)
+            }
         }
     }
     
