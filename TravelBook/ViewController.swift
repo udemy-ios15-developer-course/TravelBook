@@ -8,6 +8,7 @@
 import UIKit
 import MapKit
 import CoreLocation
+import CoreData
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate{
 
@@ -16,6 +17,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     @IBOutlet weak var commentText: UITextField!
     
     var locationManager = CLLocationManager()
+    var longitude = Double()
+    var latitude = Double()
     
     
     override func viewDidLoad() {
@@ -42,9 +45,9 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
             annotation.title = nameText.text
             annotation.subtitle = commentText.text
             self.mapView.addAnnotation(annotation)
+            longitude = touchCoordinates.longitude
+            latitude = touchCoordinates.latitude
         }
-    
-        
     }
 
 
@@ -53,6 +56,26 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         let span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
         let region = MKCoordinateRegion(center: location, span: span)
         mapView.setRegion(region, animated: true)
+    }
+    
+    @IBAction func saveButtonClicked(_ sender: Any) {
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let context = appDelegate.persistentContainer.viewContext
+        
+        let newPlace = NSEntityDescription.insertNewObject(forEntityName: "Places", into: context)
+        newPlace.setValue(nameText.text, forKey: "name")
+        newPlace.setValue(commentText.text, forKey: "comment")
+        newPlace.setValue(longitude, forKey: "longitude")
+        newPlace.setValue(latitude, forKey: "latitude")
+        newPlace.setValue(UUID(), forKey: "id")
+        
+        do {
+            try context.save()
+            print("success")
+        } catch {
+            fatalError(error.localizedDescription)
+        }
     }
 }
 
