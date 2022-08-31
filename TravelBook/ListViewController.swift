@@ -13,7 +13,8 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     @IBOutlet weak var tableView: UITableView!
     var idArray = [UUID]()
     var nameArray = [String]()
-    
+    var chosenName = ""
+    var chosenId : UUID?
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,18 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
     @objc
     func addLocation() {
         performSegue(withIdentifier: "toViewController", sender: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        chosenName = nameArray[indexPath.row]
+        chosenId = idArray[indexPath.row]
+        performSegue(withIdentifier: "toViewController", sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ViewController
+        destinationVC.selectedName = chosenName
+        destinationVC.selectedId = chosenId
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
