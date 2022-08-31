@@ -24,6 +24,11 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         getData()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(getData), name:NSNotification.Name("newPlace"), object: nil)
+    }
+    
+    
     @objc
     func addLocation() {
         performSegue(withIdentifier: "toViewController", sender: nil)
@@ -53,6 +58,7 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
+    @objc
     func getData() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let context = appDelegate.persistentContainer.viewContext
