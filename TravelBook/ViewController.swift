@@ -61,6 +61,11 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
                     let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
                     annotation.coordinate = coordinate
                     mapView.addAnnotation(annotation)
+                    
+                    locationManager.stopUpdatingLocation()
+                    let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+                    let region = MKCoordinateRegion(center: coordinate, span: span)
+                    mapView.setRegion(region, animated: true)
                 }
                 
             } catch {
@@ -88,6 +93,10 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if selectedName != "" {
+            return
+        }
+        
         let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
         let span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
         let region = MKCoordinateRegion(center: location, span: span)
